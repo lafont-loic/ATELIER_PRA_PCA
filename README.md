@@ -3,6 +3,10 @@ ATELIER PRA/PCA
 ------------------------------------------------------------------------------------------------------
 L’idée en 30 secondes : Cet atelier met en œuvre un **mini-PRA** sur **Kubernetes** en déployant une **application Flask** avec une **base SQLite** stockée sur un **volume persistant (PVC pra-data)** et des **sauvegardes automatiques réalisées chaque minute vers un second volume (PVC pra-backup)** via un **CronJob**. L’**image applicative est construite avec Packer** et le **déploiement orchestré avec Ansible**, tandis que Kubernetes assure la gestion des pods et de la disponibilité applicative. Nous observerons la différence entre **disponibilité** (recréation automatique des pods sans perte de données) et **reprise après sinistre** (perte volontaire du volume de données puis restauration depuis les backups), nous mesurerons concrètement les RTO et RPO, et comprendrons les limites d’un PRA local non répliqué. Cet atelier illustre de manière pratique les principes de continuité et de reprise d’activité, ainsi que le rôle respectif des conteneurs, du stockage persistant et des mécanismes de sauvegarde.
   
+**Architecture cible :** Ci-dessous, voici l'architecture cible souhaitée.   
+  
+![Screenshot Actions](Architecture_cible.png)  
+  
 -------------------------------------------------------------------------------------------------------
 Séquence 1 : Codespace de Github
 -------------------------------------------------------------------------------------------------------
@@ -20,7 +24,7 @@ Objectif : Créer votre cluster Kubernetes K3d
 Difficulté : Simple (~5 minutes)
 ---------------------------------------------------
 Vous allez dans cette séquence mettre en place un cluster Kubernetes K3d contenant un master et 2 workers.  
-Dans le terminal du Codespace copier/coller les codes ci-dessous etape par étape :  
+Dans le terminal de votre Codespace copier/coller les codes ci-dessous etape par étape :  
 
 **Création du cluster K3d**  
 ```
@@ -57,9 +61,7 @@ Difficulté : Moyen/Difficile (~2h)
 ---------------------------------------------------  
 Votre mission (si vous l'acceptez) : Créez une **image applicative customisée à l'aide de Packer** (Image de base Nginx embarquant le fichier index.html présent à la racine de ce Repository), puis déployer cette image customisée sur votre **cluster K3d** via **Ansible**, le tout toujours dans **GitHub Codespace**.  
 
-**Architecture cible :** Ci-dessous, l'architecture cible souhaitée.   
-  
-![Screenshot Actions](Architecture_cible.png)   
+ 
   
 ---------------------------------------------------  
 ## Processus de travail (résumé)
