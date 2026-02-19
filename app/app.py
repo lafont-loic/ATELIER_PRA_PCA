@@ -90,6 +90,7 @@ def count():
 
 @app.route('/status')
 def status():
+    db = get_db()
     # On récupère le nombre de messages (comme dans ta route /count)
     cursor = db.execute('SELECT count(*) FROM events')
     count = cursor.fetchone()[0]
