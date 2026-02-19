@@ -231,27 +231,30 @@ Faites preuve de pédagogie et soyez clair dans vos explications et procedures d
 **Exercice 1 :**  
 Quels sont les composants dont la perte entraîne une perte de données ?  
   
-*..Répondez à cet exercice ici..*
+Le PVC pra-backup qui est le disque qui contient les sauvegarde)
+La destruction du noeud physique qui herberge le disque
 
 **Exercice 2 :**  
 Expliquez nous pourquoi nous n'avons pas perdu les données lors de la supression du PVC pra-data  
   
-*..Répondez à cet exercice ici..*
+Les données n'ont pas été perdu car le cronJobs faisait une sauvegarde toutes les minutes. Et donc on à pu restauré
+
 
 **Exercice 3 :**  
 Quels sont les RTO et RPO de cette solution ?  
   
-*..Répondez à cet exercice ici..*
+RPO (Recovery Point Objective) concerne les donné que l'on accepté de perdre on est sur du 1 minutes entre chaque backup. Le RTO (Recovery Time Objective) concerne le temps d'indisponibilité c'est à dire le temps de réparations de l'application
 
 **Exercice 4 :**  
 Pourquoi cette solution (cet atelier) ne peux pas être utilisé dans un vrai environnement de production ? Que manque-t-il ?   
   
-*..Répondez à cet exercice ici..*
+Car SQlite est une faiblaisse le fait que la base de donnée ne soit en soit qu'un simple fichier. Il faudrait avoir une vrai base avec un vrai systeme de gestion de base de données comme mysql ou Mariadb.
+
   
 **Exercice 5 :**  
 Proposez une archtecture plus robuste.   
   
-*..Répondez à cet exercice ici..*
+Il faut remplacé MariaDB, externalisé les sauvegarde. Si tous github tombe tous est perdu. Automatisé la restaurations en cas de problème logiciel.
 
 ---------------------------------------------------
 Séquence 6 : Ateliers  
