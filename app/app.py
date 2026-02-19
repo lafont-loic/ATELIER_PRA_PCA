@@ -90,16 +90,22 @@ def count():
 
 @app.route('/status')
 def status():
-    import os, time
-    # Connexion à la base
-    db = get_db()
-    cursor = db.execute('SELECT count(*) FROM events')
-    count = cursor.fetchone()[0]
+    import os, time, sqlite3
     
-    # Chemin du backup (vérifie bien si c'est /backup ou /data/backup dans ton TP)
+    # 1. On récupère le chemin de la BDD depuis les variables d'environnement
+    db_path = os.getenv('DB_PATH', '/data/app.db')
+    
+    # 2. On compte les messages manuellement pour éviter l'erreur 'db not defined'
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.execute('SELECT count(*) FROM events')
+        count = cursor.fetchone()[0]
+        conn.close()
+    except Exception:
+        count = "Error reading DB"
+
+    # 3. On regarde les backups
     backup_dir = '/backup'
-    
-    # On initialise les valeurs par défaut pour éviter les erreurs
     latest_file = None
     age = None
 
@@ -109,16 +115,14 @@ def status():
             if files:
                 latest_file = max(files, key=lambda x: os.path.getmtime(os.path.join(backup_dir, x)))
                 age = int(time.time() - os.path.getmtime(os.path.join(backup_dir, latest_file)))
-    except Exception as e:
-        # Si le dossier n'est pas accessible, on ne plante pas toute la page
-        return {"count": count, "error": str(e), "backup_status": "folder_inaccessible"}
+    except Exception:
+        pass
 
     return {
         "count": count,
         "last_backup_file": latest_file,
         "backup_age_seconds": age
     }
-
 # ---------- Main ----------
 if __name__ == "__main__":
     init_db()
