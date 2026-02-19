@@ -88,6 +88,30 @@ def count():
 
     return jsonify(count=n)
 
+@app.route('/status')
+def status():
+    # On récupère le nombre de messages (comme dans ta route /count)
+    cursor = db.execute('SELECT count(*) FROM events')
+    count = cursor.fetchone()[0]
+    
+    # On liste les fichiers dans le dossier de backup
+    import os, time
+    backup_dir = '/backup'
+    files = [f for f in os.listdir(backup_dir) if f.endswith('.db')]
+    
+    if not files:
+        return {"count": count, "last_backup_file": None, "backup_age_seconds": None}
+        
+    # On trouve le plus récent
+    latest_file = max(files, key=lambda x: os.path.getmtime(os.path.join(backup_dir, x)))
+    age = int(time.time() - os.path.getmtime(os.path.join(backup_dir, latest_file)))
+    
+    return {
+        "count": count,
+        "last_backup_file": latest_file,
+        "backup_age_seconds": age
+    }
+
 # ---------- Main ----------
 if __name__ == "__main__":
     init_db()
