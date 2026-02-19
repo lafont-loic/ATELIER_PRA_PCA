@@ -25,7 +25,7 @@ spec:
           command: ["/bin/sh","-lc"]
           args:
             - |
-              cd /opt/app && gunicorn -w 2 -b 0.0.0.0:8080 app:app
+              cd /app && gunicorn -w 2 -b 0.0.0.0:8080 app:app
           volumeMounts:
             - name: data
               mountPath: /data
