@@ -90,23 +90,29 @@ def count():
 
 @app.route('/status')
 def status():
+    import os, time
+    # Connexion à la base
     db = get_db()
-    # On récupère le nombre de messages (comme dans ta route /count)
     cursor = db.execute('SELECT count(*) FROM events')
     count = cursor.fetchone()[0]
     
-    # On liste les fichiers dans le dossier de backup
-    import os, time
+    # Chemin du backup (vérifie bien si c'est /backup ou /data/backup dans ton TP)
     backup_dir = '/backup'
-    files = [f for f in os.listdir(backup_dir) if f.endswith('.db')]
     
-    if not files:
-        return {"count": count, "last_backup_file": None, "backup_age_seconds": None}
-        
-    # On trouve le plus récent
-    latest_file = max(files, key=lambda x: os.path.getmtime(os.path.join(backup_dir, x)))
-    age = int(time.time() - os.path.getmtime(os.path.join(backup_dir, latest_file)))
-    
+    # On initialise les valeurs par défaut pour éviter les erreurs
+    latest_file = None
+    age = None
+
+    try:
+        if os.path.exists(backup_dir):
+            files = [f for f in os.listdir(backup_dir) if f.endswith('.db')]
+            if files:
+                latest_file = max(files, key=lambda x: os.path.getmtime(os.path.join(backup_dir, x)))
+                age = int(time.time() - os.path.getmtime(os.path.join(backup_dir, latest_file)))
+    except Exception as e:
+        # Si le dossier n'est pas accessible, on ne plante pas toute la page
+        return {"count": count, "error": str(e), "backup_status": "folder_inaccessible"}
+
     return {
         "count": count,
         "last_backup_file": latest_file,
